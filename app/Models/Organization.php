@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Organization extends Model
 {
-    use HasUuid;
+    use HasUuids;
     protected $fillable = ['name', 'code'];
 
     public function users()

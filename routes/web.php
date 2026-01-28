@@ -22,7 +22,9 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/about', [AboutController::class, 'index'])->name('dashboard.about');
     Route::get('/region', [RegionController::class, 'index'])->name('dashboard.region');
-    Route::get('/organizations', [OrganizationsController::class, 'index'])->name('dashboard.organizations');
+
+    Route::get('/organizations', [OrganizationsController::class, 'index'])->name('organizations.index');
+    Route::post('/organizations', [OrganizationsController::class, 'store'])->name('organizations.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
