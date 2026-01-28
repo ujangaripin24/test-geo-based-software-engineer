@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -12,13 +13,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('regions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignUuid('organization_id')->constrained();
+            $table->uuid()->primary();
+            $table->foreignUuid('organization_id')
+                ->nullable()
+                ->constrained('organizations')
+                ->onDelete('cascade');
             $table->string('name');
             $table->string('type');
-            $table->geometry('geom', 'polygon', 4326);
+            // $table->geometry('geom', 'polygon', 4326);
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE regions ADD COLUMN geom geometry(Polygon, 4326)');
     }
 
     /**
