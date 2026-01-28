@@ -1,8 +1,17 @@
 import ModalComponent from '@/Components/ModalComponent';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import { Button } from 'flowbite-react';
+import { useState } from 'react';
 
 export default function Dashboard() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<string>('');
+
+    const handleOpenModal = (type: string) => {
+        setModalType(type);
+        setIsModalOpen(true);
+    };
     return (
         <AuthenticatedLayout
             header={
@@ -20,8 +29,13 @@ export default function Dashboard() {
                             You're logged in!
                         </div>
                     </div>
+                    <Button color="red" className='shadow-sm dark:text-gray-800' onClick={() => handleOpenModal('Logout')}>Keluar</Button>
                 </div>
-                <ModalComponent/>
+                <ModalComponent
+                    isOpen={isModalOpen}
+                    type={modalType}
+                    onClose={() => setIsModalOpen(false)}
+                />
             </div>
         </AuthenticatedLayout>
     );
