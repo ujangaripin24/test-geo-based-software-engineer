@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\RegionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +20,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/about', [AboutController::class, 'index'])->name('dashboard.about');
+    Route::get('/region', [RegionController::class, 'index'])->name('dashboard.region');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
