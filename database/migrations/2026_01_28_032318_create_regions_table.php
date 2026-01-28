@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('regions', function (Blueprint $table) {
             $table->id();
+            $table->foreignUuid('organization_id')->constrained();
+            $table->string('name');
+            $table->string('type');
+            $table->geometry('geom', 'polygon', 4326);
             $table->timestamps();
         });
     }
