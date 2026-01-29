@@ -22,7 +22,10 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/about', [AboutController::class, 'index'])->name('dashboard.about');
-    Route::get('/region', [RegionController::class, 'index'])->name('dashboard.region');
+    
+    Route::get('/regions', [RegionController::class, 'index'])->name('regions.index');
+    Route::post('/regions', [RegionController::class, 'index'])->name('regions.store');
+    Route::delete('/regions/{region}', [RegionController::class, 'destroy'])->name('regions.destroy');
 
     Route::get('/organizations', [OrganizationsController::class, 'index'])->name('organizations.index');
     Route::post('/organizations', [OrganizationsController::class, 'store'])->name('organizations.store');

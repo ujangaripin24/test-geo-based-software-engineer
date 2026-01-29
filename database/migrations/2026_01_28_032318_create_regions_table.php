@@ -13,14 +13,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('regions', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->uuid('id')->primary();
             $table->foreignUuid('organization_id')
                 ->nullable()
                 ->constrained('organizations')
                 ->onDelete('cascade');
             $table->string('name');
             $table->string('type');
-            // $table->geometry('geom', 'polygon', 4326);
             $table->timestamps();
         });
         DB::statement('ALTER TABLE regions ADD COLUMN geom geometry(Polygon, 4326)');
