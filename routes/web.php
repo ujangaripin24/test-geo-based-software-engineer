@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
 
     Route::get('/organizations', [OrganizationsController::class, 'index'])->name('organizations.index');
     Route::post('/organizations', [OrganizationsController::class, 'store'])->name('organizations.store');
+    Route::put('/organizations/{organization}', [OrganizationsController::class, 'update'])->name('organizations.update');
+    Route::delete('/organizations/{organization}', [OrganizationsController::class, 'destroy'])->name('organizations.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
