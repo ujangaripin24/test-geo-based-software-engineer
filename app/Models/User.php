@@ -21,7 +21,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'organization_id',
+        'role',
     ];
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function regions()
+    {
+        return $this->belongsToMany(Region::class, 'user_regions');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
