@@ -1,7 +1,7 @@
-import ModalComponent from '@/Components/ModalComponent';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import React, { useState } from 'react';
+import ModalComponent from './Components/ModalComponent';
 
 interface Org {
   id: string;
