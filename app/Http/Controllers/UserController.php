@@ -6,6 +6,7 @@ use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -13,6 +14,11 @@ class UserController extends Controller
   public function index(Request $request)
   {
     $query = User::with('organization');
+
+    if (Auth::user()->role !== 'super_admin') {
+      $query->where('organization_id', Auth::user()->organization_id);
+    }
+
     if ($request->search) {
       $query->where(function ($q) use ($request) {
         $q->where('name', 'ilike', '%' . $request->search . '%')
@@ -27,7 +33,6 @@ class UserController extends Controller
       'roles' => ['super_admin', 'admin', 'operator', 'viewer']
     ]);
   }
-
   public function store(Request $request)
   {
     $validated = $request->validate([
@@ -48,6 +53,9 @@ class UserController extends Controller
 
   public function update(Request $request, User $user)
   {
+    if (Auth::user()->role !== 'super_admin' && $user->organization_id !== Auth::user()->organization_id) {
+      abort(403, 'Anda tidak memiliki akses ke user ini.');
+    }
     $validated = $request->validate([
       'name' => 'required|string|max:255',
       'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -65,6 +73,9 @@ class UserController extends Controller
 
   public function destroy(User $user)
   {
+    if (Auth::user()->role !== 'super_admin' && $user->organization_id !== Auth::user()->organization_id) {
+      abort(403, 'Anda tidak memiliki akses ke user ini.');
+    }
     $user->delete();
     return redirect()->back()->with('success', 'User deleted.');
   }
