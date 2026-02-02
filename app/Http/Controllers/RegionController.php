@@ -33,11 +33,13 @@ class RegionController extends Controller
             'geojson' => 'required|json',
         ]);
 
-        Region::created([
-            'name' => $validated['name'],
-            'type' => $validated['type'],
-            'geom' => DB::raw("ST_GeomFromGeoJSON('" . $validated['geojson'] . "')"),
-        ]);
+        $region = new Region();
+        $region->name = $validated['name'];
+        $region->type = $validated['type'];
+
+        $region->geom = DB::raw("ST_SetSRID(ST_GeomFromGeoJSON('" . $validated['geojson'] . "'), 4326)");
+
+        $region->save();
 
         return redirect()->back()->with('success', 'Region berhasil disimpan.');
     }

@@ -24,7 +24,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/about', [AboutController::class, 'index'])->name('dashboard.about');
     
     Route::get('/regions', [RegionController::class, 'index'])->name('regions.index');
-    Route::post('/regions', [RegionController::class, 'index'])->name('regions.store');
+    Route::post('/regions', [RegionController::class, 'store'])->name('regions.store');
     Route::delete('/regions/{region}', [RegionController::class, 'destroy'])->name('regions.destroy');
 
     Route::get('/organizations', [OrganizationsController::class, 'index'])->name('organizations.index');
