@@ -1,6 +1,14 @@
 import Authenticated from "@/Layouts/AuthenticatedLayout"
 import { Head, useForm } from "@inertiajs/react"
-import React from "react";
+import React, { useState } from "react";
+import ModalComponents from "./Components/ModalComponents";
+
+interface Region {
+  id: string;
+  name: string;
+  type: string;
+  geojson: string;
+}
 
 const RegionPage: React.FC = ({ regions, types, filters }: any) => {
   const { data, setData, post, delete: destroy, reset, processing, errors } = useForm({
@@ -8,6 +16,20 @@ const RegionPage: React.FC = ({ regions, types, filters }: any) => {
     type: 'custom',
     geojson: ''
   });
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: "DeleteRegion" | "FormRegion";
+    data: Region | null;
+  }>({
+    isOpen: false,
+    type: "FormRegion",
+    data: null
+  });
+
+  const openModal = (type: "DeleteRegion" | "FormRegion", data: Region | null = null) => {
+    setModalConfig({ isOpen: true, type, data });
+  }
 
   const submitRegion = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +99,7 @@ const RegionPage: React.FC = ({ regions, types, filters }: any) => {
                     <code className="text-[10px] block max-w-xs truncate">{region.geojson}</code>
                   </td>
                   <td className="p-4">
-                    <button onClick={() => confirm('Hapus wilayah?') && destroy(route('regions.destroy', region.id))} className="text-red-500">Hapus</button>
+                    <button onClick={() => openModal("DeleteRegion", region)} className="text-red-500 hover:underline">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -85,6 +107,12 @@ const RegionPage: React.FC = ({ regions, types, filters }: any) => {
           </table>
         </div>
       </div>
+      <ModalComponents
+        isOpen={modalConfig.isOpen}
+        type={modalConfig.type}
+        dataEdit={modalConfig.data}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+      />
     </Authenticated>
   )
 }

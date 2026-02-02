@@ -75,7 +75,6 @@ const ModalComponent: React.FC<PanelModalProps> = ({ isOpen, onClose, type, data
     }
   }
   return <Modal show={isOpen} onClose={onClose}>{renderModal()}</Modal>
-
 }
 
 export default ModalComponent
