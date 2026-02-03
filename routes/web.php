@@ -6,6 +6,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRegionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,7 +23,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/about', [AboutController::class, 'index'])->name('dashboard.about');
-    
+
     Route::get('/regions', [RegionController::class, 'index'])->name('regions.index');
     Route::put('/regions/{region}', [RegionController::class, 'update'])->name('regions.update');
     Route::post('/regions', [RegionController::class, 'store'])->name('regions.store');
@@ -32,6 +33,9 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::post('/organizations', [OrganizationsController::class, 'store'])->name('organizations.store');
     Route::put('/organizations/{organization}', [OrganizationsController::class, 'update'])->name('organizations.update');
     Route::delete('/organizations/{organization}', [OrganizationsController::class, 'destroy'])->name('organizations.destroy');
+
+    Route::get('/users/{user}/regions', [UserRegionController::class, 'index'])->name('user-regions.index');
+    Route::post('/users/{user}/regions', [UserRegionController::class, 'store'])->name('user-regions.store');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -43,4 +47,4 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
