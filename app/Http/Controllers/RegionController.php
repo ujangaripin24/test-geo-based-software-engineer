@@ -44,9 +44,9 @@ class RegionController extends Controller
 
         $region->name = $validated['name'];
         $region->type = $validated['type'];
-        $region->geom = DB::raw("ST_GeomFromGeoJSON('" . $validated['geojson'] . "')");
-        $region->save();
+        $region->geom = DB::raw("ST_SetSRID(ST_GeomFromGeoJSON('" . $validated['geojson'] . "'), 4326)");
 
+        $region->save();
         return redirect()->back()->with('success', 'Region updated.');
     }
 
@@ -71,6 +71,9 @@ class RegionController extends Controller
 
     public function destroy(Region $region)
     {
+        if (Auth::user()->role !== 'super_admin' && $region->organization_id !== Auth::user()->organization_id) {
+            abort(403, 'Unauthorized action.');
+        }
         $region->delete();
         return redirect()->back()->with('success', 'Region dihapus.');
     }

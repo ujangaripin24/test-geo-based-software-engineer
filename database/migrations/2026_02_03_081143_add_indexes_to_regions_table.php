@@ -12,20 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('regions', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('organization_id')
-                ->nullable()
-                ->constrained('organizations')
-                ->onDelete('cascade');
-            $table->string('name');
-            $table->string('type');
-            $table->timestamps();
-
+        Schema::table('regions', function (Blueprint $table) {
             $table->index('organization_id');
         });
-
-        DB::statement('ALTER TABLE regions ADD COLUMN geom geometry(Polygon, 4326)');
 
         DB::statement('CREATE INDEX regions_geom_gist ON regions USING GIST (geom)');
     }
@@ -35,6 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('regions');
+        Schema::table('regions', function (Blueprint $table) {
+            $table->dropIndex(['organization_id']);
+        });
+
+        DB::statement('DROP INDEX IF EXISTS regions_geom_gist');
     }
 };
