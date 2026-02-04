@@ -34,13 +34,12 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::put('/organizations/{organization}', [OrganizationsController::class, 'update'])->name('organizations.update');
     Route::delete('/organizations/{organization}', [OrganizationsController::class, 'destroy'])->name('organizations.destroy');
 
-    Route::get('/users/{user}/regions', [UserRegionController::class, 'index'])->name('user-regions.index');
-    Route::post('/users/{user}/regions', [UserRegionController::class, 'store'])->name('user-regions.store');
-
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/{user}/regions', [UserRegionController::class, 'index'])->name('user-regions.index');
+    Route::post('/users/{user}/regions', [UserRegionController::class, 'store'])->name('user-regions.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

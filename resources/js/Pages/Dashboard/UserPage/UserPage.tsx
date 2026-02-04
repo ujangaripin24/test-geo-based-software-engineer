@@ -1,4 +1,4 @@
-import { Head, router, useForm } from '@inertiajs/react'
+import { Head, Link, router, useForm } from '@inertiajs/react'
 import React, { useState } from 'react'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ModalComponent from './Components/ModalComponent';
@@ -72,6 +72,12 @@ const UserPage: React.FC = ({ users, organizations, roles, filters }: any) => {
                   <td className="p-4">{user.organization?.name || '-'}</td>
                   <td className="p-4 font-mono text-sm">{user.role}</td>
                   <td className="p-4 space-x-4 text-center">
+                    <Link
+                      href={route('user-regions.index', user.id)}
+                      className="text-blue-600 hover:text-blue-900 bg-blue-100 px-3 py-1 rounded-md text-sm"
+                    >
+                      Kelola Wilayah
+                    </Link>
                     <button onClick={() => openModal("FormUser", user)} className="text-blue-500 hover:underline">Edit</button>
                     <button onClick={() => openModal("DeleteUser", user)} className="text-red-500 hover:underline">Delete</button>
                   </td>
