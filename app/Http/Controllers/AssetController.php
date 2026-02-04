@@ -48,23 +48,54 @@ class AssetController extends Controller
             'category' => 'required|string',
             'status' => 'required|in:active,inactive,maintenance',
             'geojson' => 'required|json',
-            'meta' => 'nullable|array', // Atribut fleksibel
+            'meta' => 'nullable|array',
         ]);
 
         $asset = new Asset();
+
         $asset->name = $validated['name'];
         $asset->category = $validated['category'];
         $asset->status = $validated['status'];
-        $asset->meta = $validated['meta'] ?? [];
         $asset->region_id = $validated['region_id'];
-
         $asset->organization_id = $user->organization_id;
+
+        $asset->meta = $validated['meta'] ?? [];
 
         $asset->geom = DB::raw("ST_SetSRID(ST_GeomFromGeoJSON('" . $validated['geojson'] . "'), 4326)");
 
         $asset->save();
 
         return redirect()->back()->with('success', 'Asset berhasil ditambahkan.');
+    }
+
+    public function update(Request $request, Asset $asset)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'super_admin' && $asset->organization_id !== $user->organization_id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengubah aset ini.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'region_id' => 'required|exists:regions,id',
+            'category' => 'required|string',
+            'status' => 'required|in:active,inactive,maintenance',
+            'geojson' => 'required|json',
+            'meta' => 'nullable|array',
+        ]);
+
+        $asset->name = $validated['name'];
+        $asset->category = $validated['category'];
+        $asset->status = $validated['status'];
+        $asset->region_id = $validated['region_id'];
+        $asset->meta = $validated['meta'] ?? [];
+
+        $asset->geom = DB::raw("ST_SetSRID(ST_GeomFromGeoJSON('" . $validated['geojson'] . "'), 4326)");
+
+        $asset->save();
+
+        return redirect()->back()->with('success', 'Asset berhasil diperbarui.');
     }
 
     public function destroy(Asset $asset)

@@ -12,24 +12,16 @@ class Asset extends Model
 {
     use HasUuids, SoftDeletes;
 
-    protected $fillable = [
-        'organization_id',
-        'region_id',
-        'name',
-        'category',
-        'status',
-        'meta'
-    ];
+    protected $fillable = ['name', 'category', 'status', 'meta', 'region_id', 'organization_id'];
 
-    protected $cast = [
-        'meta' => 'json'
+    protected $casts = [
+        'meta' => 'array',
     ];
-
     protected static function boot()
     {
         return parent::boot();
 
-        static::saving(function ($asset){
+        static::saving(function ($asset) {
             $region = Region::find($asset->region_id);
 
             if ($region && $region->organization_id !== $asset->organization_id) {
