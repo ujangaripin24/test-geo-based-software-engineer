@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class Asset extends Model
 {
@@ -23,6 +24,21 @@ class Asset extends Model
     protected $cast = [
         'meta' => 'json'
     ];
+
+    protected static function boot()
+    {
+        return parent::boot();
+
+        static::saving(function ($asset){
+            $region = Region::find($asset->region_id);
+
+            if ($region && $region->organization_id !== $asset->organization_id) {
+                throw ValidationException::withMessages([
+                    'region_id' => ['Region ini tidak terdaftar dalam organisasi Anda.']
+                ]);
+            }
+        });
+    }
 
     public function organization()
     {
