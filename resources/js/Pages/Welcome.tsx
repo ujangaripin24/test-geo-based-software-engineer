@@ -1,12 +1,12 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Card } from 'flowbite-react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 
 export default function Welcome({
   auth,
-}: PageProps<{ laravelVersion: string; phpVersion: string }>) {
-  const position = [51.505, -0.09];
+}: PageProps) {
+  const position: [number, number] = [-6.200000, 106.816666];
   return (
     <>
       <Head title="Welcome" />``
@@ -37,19 +37,8 @@ export default function Welcome({
                 )}
               </nav>
             </header>
-            <main className="mt-6">
-              <MapContainer
-                center={position}
-                zoom={13}
-                scrollWheelZoom={false}
-                style={{ height: '400px', width: '100%' }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-              </MapContainer>
 
+            <main className="mt-6">
               <div className='flex items-center justify-center py-12 px-4'>
                 <Card href="#" className="max-w-sm w-full sm:max-w-md md:max-w-lg lg:max-w-xl">
                   <h5 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
