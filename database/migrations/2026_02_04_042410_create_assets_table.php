@@ -17,9 +17,11 @@ return new class extends Migration
             $table->foreignUuid('organization_id')
                 ->constrained('organizations')
                 ->onDelete('cascade');
+                
             $table->foreignUuid('region_id')
                 ->constrained('regions')
                 ->onDelete('cascade');
+
             $table->string('name');
             $table->string('category');
             $table->string('status')->default('active');
