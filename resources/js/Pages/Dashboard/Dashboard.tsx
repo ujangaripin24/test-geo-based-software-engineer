@@ -6,9 +6,9 @@ import { useState } from 'react';
 
 export default function Dashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalType, setModalType] = useState<string>('');
+    const [modalType, setModalType] = useState<'Logout' | ''>('');
 
-    const handleOpenModal = (type: string) => {
+    const handleOpenModal = (type: 'Logout') => {
         setModalType(type);
         setIsModalOpen(true);
     };
@@ -33,7 +33,7 @@ export default function Dashboard() {
                 </div>
                 <ModalComponent
                     isOpen={isModalOpen}
-                    type={modalType}
+                    type={modalType as 'Logout'}
                     onClose={() => setIsModalOpen(false)}
                 />
             </div>
