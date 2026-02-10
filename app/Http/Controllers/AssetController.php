@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use App\Models\Region;
+use App\Services\AssetSpatialService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,13 @@ use Inertia\Inertia;
 
 class AssetController extends Controller
 {
+    protected $spatialService;
+
+    public function __construct(AssetSpatialService $spatialService)
+    {
+        $this->spatialService = $spatialService;
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -51,8 +59,9 @@ class AssetController extends Controller
             'meta' => 'nullable|array',
         ]);
 
-        $asset = new Asset();
+        $this->spatialService->validateContainment($validated['geojson'], $validated['region_id']);
 
+        $asset = new Asset();
         $asset->name = $validated['name'];
         $asset->category = $validated['category'];
         $asset->status = $validated['status'];
@@ -84,6 +93,8 @@ class AssetController extends Controller
             'geojson' => 'required|json',
             'meta' => 'nullable|array',
         ]);
+
+        $this->spatialService->validateContainment($validated['geojson'], $validated['region_id']);
 
         $asset->name = $validated['name'];
         $asset->category = $validated['category'];

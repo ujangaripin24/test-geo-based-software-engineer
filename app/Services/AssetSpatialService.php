@@ -25,7 +25,6 @@ class AssetSpatialService
                 'geojson' => ['Error Spasial: Koordinat aset berada di luar batas wilayah (Region) yang Anda pilih.'],
             ]);
         }
-
         return true;
     }
 }
