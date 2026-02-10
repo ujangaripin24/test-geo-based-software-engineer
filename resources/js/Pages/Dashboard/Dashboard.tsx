@@ -29,7 +29,7 @@ export default function Dashboard() {
                             You're logged in!
                         </div>
                     </div>
-                    <Button color="red" className='shadow-sm dark:text-gray-800' onClick={() => handleOpenModal('Logout')}>Keluar</Button>
+                    <button className="px-6 py-2 bg-red-600 text-white rounded" onClick={() => handleOpenModal('Logout')}>Keluar</button>
                 </div>
                 <ModalComponent
                     isOpen={isModalOpen}

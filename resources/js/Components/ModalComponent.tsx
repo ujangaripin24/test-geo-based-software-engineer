@@ -21,8 +21,8 @@ const ModalComponent: React.FC<PanelModalProps> = ({ isOpen, onClose, type }) =>
             <ModalHeader>Konfirmasi Logout</ModalHeader>
             <ModalBody><p>Apakah anda yakin ingin keluar dari sistem?</p></ModalBody>
             <ModalFooter>
-              <Button color="failure" onClick={confirmLogout}>Ya, Keluar</Button>
-              <Button color="gray" onClick={onClose}>Batal</Button>
+              <button className="px-6 py-2 bg-green-600 text-white rounded" onClick={confirmLogout}>Ya, Keluar</button>
+              <button className="px-6 py-2 bg-red-600 text-white rounded" onClick={onClose}>Batal</button>
             </ModalFooter>
           </>
         );
