@@ -26,21 +26,26 @@ class AssetController extends Controller
 
         if ($user->role !== 'super_admin') {
             $query->where('organization_id', $user->organization_id);
-            $assignedRegionIds = $user->regions()->pluck('regions.id');
-            $query->whereIn('region_id', $assignedRegionIds);
-        }
+            $allowedRegionIds = $user->regions()->pluck('regions.id')->toArray();
 
+            if (empty($allowedRegionIds)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereIn('region_id', $allowedRegionIds);
+            }
+        }
         if ($request->search) {
             $query->where('name', 'ilike', '%' . $request->search . '%');
         }
-
         if ($request->category) {
             $query->where('category', $request->category);
         }
 
         return Inertia::render('Dashboard/AssetPage/AssetPage', [
             'assets' => $query->latest()->paginate(10)->withQueryString(),
-            'regions' => Region::where('organization_id', $user->organization_id)->get(['id', 'name']),
+            'regions' => $user->role === 'super_admin'
+                ? Region::all(['id', 'name'])
+                : $user->regions()->get(['regions.id', 'regions.name']),
             'filters' => $request->only(['search', 'category']),
             'categories' => ['road', 'bridge', 'building', 'other']
         ]);
