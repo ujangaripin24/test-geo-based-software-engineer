@@ -13,14 +13,15 @@ class AssetSpatialService
         $region = Region::findOrFail($regionId);
 
         $result = DB::selectOne("
-            geom,
-            ST_SetSRID(ST_GeomFromGeoJSON(?), 4326)
-        ) as in_inside
-        FROM regions
-        WHERE id = ?
+            SELECT ST_Contains(
+                geom, 
+                ST_SetSRID(ST_GeomFromGeoJSON(?), 4326)
+            ) as is_inside 
+            FROM regions 
+            WHERE id = ?
         ", [$geojson, $regionId]);
 
-        if (!$result || !$result->in_inside) {
+        if (!$result || !$result->is_inside) {
             throw ValidationException::withMessages([
                 'geojson' => ['Error Spasial: Koordinat aset berada di luar batas wilayah (Region) yang Anda pilih.'],
             ]);
