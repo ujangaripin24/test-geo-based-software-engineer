@@ -20,7 +20,7 @@ export const SidebarMenu: React.FC<SidebarProps> = ({
       )}
       <aside
         id="top-bar-sidebar"
-        className={`bg-white fixed top-0 left-0 z-40 w-64 h-full transition-transform bg-neutral-primary-soft border-e border-default 
+        className={`bg-white fixed top-0 left-0 w-64 h-full transition-transform bg-neutral-primary-soft border-e border-default 
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
           sm:translate-x-0`}
         aria-label="Sidebar"

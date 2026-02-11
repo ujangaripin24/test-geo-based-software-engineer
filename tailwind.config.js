@@ -8,6 +8,8 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.tsx',
+        'node_modules/flowbite-react/lib/esm/**/*.js',
+        './node_modules/flowbite/**/*.js'
     ],
 
     theme: {
@@ -20,6 +22,6 @@ export default {
 
     plugins: [
         forms,
-        require('./node_modules/flowbite/plugin')
+        require('flowbite/plugin')
     ],
 };
