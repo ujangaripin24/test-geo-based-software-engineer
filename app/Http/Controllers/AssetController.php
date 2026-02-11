@@ -163,4 +163,67 @@ class AssetController extends Controller
       'features' => $features,
     ]);
   }
+
+  public function getSpatialAssets(Request $request)
+  {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+      'south' => 'required|numeric',
+      'west'  => 'required|numeric',
+      'north' => 'required|numeric',
+      'east'  => 'required|numeric',
+      'category' => 'nullable|string',
+    ]);
+    if ($validated['south'] >= $validated['north'] || $validated['west'] >= $validated['east']) {
+      return response()->json(['error' => 'Invalid Bounding Box coordinates'], 422);
+    }
+
+    $query = Asset::query();
+
+    if ($user->role !== 'super_admin') {
+      $query->where('organization_id', $user->organization_id);
+      $allowedRegionIds = $user->regions()->pluck('regions.id')->toArray();
+
+      if (empty($allowedRegionIds)) {
+        return response()->json(['type' => 'FeatureCollection', 'features' => []]);
+      }
+      $query->whereIn('region_id', $allowedRegionIds);
+    }
+
+    $query->whereRaw("
+      ST_Intersects(
+        geom, 
+        ST_MakeEnvelope(?, ?, ?, ?, 4326)
+      )
+    ", [
+      $validated['west'],
+      $validated['south'],
+      $validated['east'],
+      $validated['north']
+    ]);
+
+    if ($request->category) {
+      $query->where('category', $request->category);
+    }
+    $assets = $query->select('*', DB::raw('ST_AsGeoJSON(geom) as geojson'))->get();
+
+    $features = $assets->map(function ($asset) {
+      return [
+        'type' => 'Feature',
+        'geometry' => json_decode($asset->geojson),
+        'properties' => [
+          'id' => $asset->id,
+          'name' => $asset->name,
+          'category' => $asset->category,
+          'status' => $asset->status,
+        ],
+      ];
+    });
+
+    return response()->json([
+      'type' => 'FeatureCollection',
+      'features' => $features,
+    ]);
+  }
 }
