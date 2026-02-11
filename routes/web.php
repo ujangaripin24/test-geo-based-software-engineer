@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/users/{user}/regions', [UserRegionController::class, 'index'])->name('user-regions.index');
     Route::post('/users/{user}/regions', [UserRegionController::class, 'store'])->name('user-regions.store');
 
+    Route::get('/api/assets/spatial', [AssetController::class, 'getSpatialAssets'])->name('assets.spatial');
     Route::get('/api/assets-geojson', [AssetController::class, 'getMapData'])->name('assets.geojson');
     Route::get('/map', [MapController::class, 'index'])->name('map.index');
 
