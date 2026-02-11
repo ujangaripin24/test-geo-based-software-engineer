@@ -11,4 +11,8 @@ class MapController extends Controller
     {
         return Inertia::render('Dashboard/MapPage/MapPage');
     }
+    public function assets()
+    {
+        return Inertia::render('Dashboard/MapPage/AssetsMap');
+    }
 }
