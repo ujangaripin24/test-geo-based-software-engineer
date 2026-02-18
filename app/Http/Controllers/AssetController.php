@@ -226,4 +226,61 @@ class AssetController extends Controller
       'features' => $features,
     ]);
   }
+
+  public function getNearbyAssets(Request $request)
+  {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+      'lat'    => 'required|numeric',
+      'lng'    => 'required|numeric',
+      'radius' => 'required|numeric|min:1|max:50000',
+    ]);
+
+    $query = Asset::query();
+
+    if ($user->role !== 'super_admin') {
+      $query->where('organization_id', $user->organization_id);
+      $allowedRegionIds = $user->regions()->pluck('region.id')->toArray();
+
+      if (empty($allowedRegionIds)) {
+        return response()->json(['type' => 'FeatureCollection', 'features' => []]);
+      }
+      $query->whereIn('region_id', $allowedRegionIds);
+    }
+
+    $query->whereRaw("
+            ST_DWithin(
+                geom::geography, 
+                ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography, 
+                ?
+            )
+        ", [
+      $validated['lng'],
+      $validated['lat'],
+      $validated['radius']
+    ]);
+
+    $assets = $query->select('*', DB::raw('ST_AsGeoJSON(geom) as geojson'))->get();
+    $features = $assets->map(function ($asset) {
+      return [
+        'type' => 'Feature',
+        'geometry' => json_decode($asset->geojson),
+        'properties' => [
+          'id' => $asset->id,
+          'name' => $asset->name,
+          'category' => $asset->category,
+        ],
+      ];
+    });
+
+    return response()->json([
+      'type' => 'FeatureCollection',
+      'features' => $features,
+      'metadata' => [
+        'center' => [$validated['lat'], $validated['lng']],
+        'radius_meters' => $validated['radius']
+      ]
+    ]);
+  }
 }
