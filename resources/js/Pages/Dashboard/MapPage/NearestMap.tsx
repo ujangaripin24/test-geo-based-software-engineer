@@ -64,7 +64,12 @@ const NearestMap: React.FC = () => {
           <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg h-[70vh] md:col-span-3 relative">
             <MapContainer center={[-6.9147, 107.6098]} zoom={13} style={{ height: '100%', width: '100%' }}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              {/* <MapEvents />
+              <MapEvents />
+              {point && (
+                <Marker position={point}>
+                  <Popup>Titik Pencarian</Popup>
+                </Marker>
+              )}
               {nearestAssets.length > 0 && (
                 <GeoJSON
                   key={JSON.stringify(nearestAssets)}
@@ -76,7 +81,7 @@ const NearestMap: React.FC = () => {
                     `);
                   }}
                 />
-              )} */}
+              )}
             </MapContainer>
           </div>
         </div>
