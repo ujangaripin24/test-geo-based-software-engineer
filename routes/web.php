@@ -48,6 +48,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/api/assets/nearby', [AssetController::class, 'getNearbyAssets'])->name('assets.nearby');
     Route::get('/map', [MapController::class, 'index'])->name('map.index');
     Route::get('/map-assets', [MapController::class, 'assets'])->name('map.assets');
+    Route::get('/map-nearby', [MapController::class, 'nearby'])->name('map.nearby');
+    
 
     Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
     Route::post('/assets', [AssetController::class, 'store'])->name('assets.store');
