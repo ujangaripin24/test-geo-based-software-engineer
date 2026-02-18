@@ -12,7 +12,8 @@ use Inertia\Inertia;
 
 class AssetController extends Controller
 {
-  protected $spatialService;
+
+  protected AssetSpatialService $spatialService;
 
   public function __construct(AssetSpatialService $spatialService)
   {
@@ -281,6 +282,64 @@ class AssetController extends Controller
         'center' => [$validated['lat'], $validated['lng']],
         'radius_meters' => $validated['radius']
       ]
+    ]);
+  }
+
+  public function getNearestAssets(Request $request)
+  {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+      'lat'   => 'required|numeric',
+      'lng'   => 'required|numeric',
+      'limit' => 'nullable|integer|min:1|max:50',
+    ]);
+
+    $limit = $validated['limit'] ?? 5;
+
+    $query = Asset::query();
+
+    if ($user->role !== 'super_admin') {
+      $query->where('organization_id', $user->organization_id);
+      $allowedRegionIds = $user->regions()->pluck('regions.id')->toArray();
+
+      if (empty($allowedRegionIds)) {
+        return response()->json(['type' => 'FeatureCollection', 'features' => []]);
+      }
+      $query->whereIn('region_id', $allowedRegionIds);
+    }
+
+    $longitude = $validated['lng'];
+    $latitude = $validated['lat'];
+
+    $query->select('*')
+      ->selectRaw("
+      ST_Distance(
+        geom::geography, 
+        ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
+      ) AS distance_meter
+    ", [$longitude, $latitude])
+      ->orderByRaw("geom <-> ST_SetSRID(ST_MakePoint(?, ?), 4326)", [$longitude, $latitude])
+      ->limit($limit);
+
+    $assets = $query->get();
+
+    $features = $assets->map(function ($asset) {
+      return [
+        'type' => 'Feature',
+        'geometry' => json_decode(DB::selectOne("SELECT ST_AsGeoJSON(?) as geojson", [$asset->geom])->geojson),
+        'properties' => [
+          'id' => $asset->id,
+          'name' => $asset->name,
+          'category' => $asset->category,
+          'distance_meter' => round($asset->distance_meter, 2),
+        ],
+      ];
+    });
+
+    return response()->json([
+      'type' => 'FeatureCollection',
+      'features' => $features,
     ]);
   }
 }
