@@ -13,7 +13,7 @@ use Inertia\Inertia;
 class AssetController extends Controller
 {
 
-  protected AssetSpatialService $spatialService;
+  protected $spatialService;
 
   public function __construct(AssetSpatialService $spatialService)
   {

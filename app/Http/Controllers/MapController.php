@@ -19,4 +19,8 @@ class MapController extends Controller
     {
         return Inertia::render('Dashboard/MapPage/NearbyMap');
     }
+    public function nearest()
+    {
+        return Inertia::render('Dashboard/MapPage/NearestMap');
+    }
 }
