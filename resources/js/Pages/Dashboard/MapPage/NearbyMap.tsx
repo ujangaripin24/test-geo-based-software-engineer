@@ -36,11 +36,11 @@ const NearbyMap: React.FC = () => {
     <Authenticated
       header={
         <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-          MapPage Dashboard
+          Proximity & Radius Search
         </h2>
       }
     >
-      <Head title="MapPage Asset Nearby Dashboard" />
+      <Head title="Proximity & Radius Search" />
       <div>
         {loading && (
           <div className="absolute top-5 left-1/2 -translate-x-1/2 z-[1000] bg-indigo-600 text-white px-4 py-1 rounded-full text-sm shadow-lg">

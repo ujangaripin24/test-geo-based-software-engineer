@@ -46,11 +46,11 @@ const MapPage: React.FC = () => {
     <Authenticated
       header={
         <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-          MapPage Dashboard
+          MapPage Spasial Dashboard
         </h2>
       }
     >
-      <Head title="MapPage Dashboard" />
+      <Head title="MapPage Spasial Dashboard" />
       <div>
         {loading ? (
           <p>Loading...</p>
