@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
 
     Route::get('/api/assets/spatial', [AssetController::class, 'getSpatialAssets'])->name('assets.spatial');
     Route::get('/api/assets-geojson', [AssetController::class, 'getMapData'])->name('assets.geojson');
+    Route::get('/api/assets/nearby', [AssetController::class, 'getNearbyAssets'])->name('assets.nearby');
     Route::get('/map', [MapController::class, 'index'])->name('map.index');
     Route::get('/map-assets', [MapController::class, 'assets'])->name('map.assets');
 
