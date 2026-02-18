@@ -342,4 +342,56 @@ class AssetController extends Controller
       'features' => $features,
     ]);
   }
+
+  public function getPaginationAssets(Request $request)
+  {
+    $user = Auth::user();
+
+    $validated = $request->validate([
+      'south'    => 'required|numeric',
+      'west'     => 'required|numeric',
+      'north'    => 'required|numeric',
+      'east'     => 'required|numeric',
+      'per_page' => 'nullable|integer|min:1|max:100',
+      'page'     => 'nullable|integer|min:1',
+    ]);
+
+    $perPage = $validated['per_page'] ?? 10;
+
+    $query = Asset::query();
+
+    if ($user->role !== 'super_admin') {
+      $query->where('organization_id', $user->organization_id);
+      $allowedRegionIds = $user->regions()->pluck('regions.id')->toArray();
+
+      if (empty($allowedRegionIds)) {
+        return response()->json([
+          'data' => [],
+          'meta' => ['total' => 0]
+        ]);
+      }
+      $query->whereIn('region_id', $allowedRegionIds);
+    }
+
+    $query->whereRaw("
+            geom && ST_MakeEnvelope(?, ?, ?, ?, 4326)
+        ", [
+      $validated['west'],
+      $validated['south'],
+      $validated['east'],
+      $validated['north']
+    ]);
+
+    $assets = $query->paginate($perPage);
+    return response()->json([
+      'data' => $assets->items(),
+      'meta' => [
+        'total'        => $assets->total(),
+        'page'         => $assets->currentPage(),
+        'per_page'     => $assets->perPage(),
+        'last_page'    => $assets->lastPage(),
+        'from_viewport' => true
+      ]
+    ]);
+  }
 }

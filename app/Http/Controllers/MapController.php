@@ -23,4 +23,8 @@ class MapController extends Controller
     {
         return Inertia::render('Dashboard/MapPage/NearestMap');
     }
+    public function pagination()
+    {
+        return Inertia::render('Dashboard/MapPage/PaginationMap');
+    }
 }
