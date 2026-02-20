@@ -394,4 +394,80 @@ class AssetController extends Controller
       ]
     ]);
   }
+
+  public function getClusteredAssets(Request $request)
+  {
+    $user = Auth::user();
+    $validated = $request->validate([
+      'south' => 'required|numeric',
+      'west'  => 'required|numeric',
+      'north' => 'required|numeric',
+      'east'  => 'required|numeric',
+      'zoom'  => 'required|integer|min:0|max:20',
+    ]);
+
+    $zoom = (int) $validated['zoom'];
+
+    $gridSize = 0;
+    if ($zoom <= 5)       $gridSize = 0.5;
+    elseif ($zoom <= 8)  $gridSize = 0.1;
+    elseif ($zoom <= 10) $gridSize = 0.05;
+    elseif ($zoom <= 12) $gridSize = 0.01;
+
+    $query = Asset::query();
+    if ($user->role !== 'super_admin') {
+      $query->where('organization_id', $user->organization_id);
+      $allowedRegionIds = $user->regions()->pluck('regions.id')->toArray();
+      if (empty($allowedRegionIds)) {
+        return response()->json(['type' => 'FeatureCollection', 'features' => []]);
+      }
+      $query->whereIn('region_id', $allowedRegionIds);
+    }
+
+    $query->whereRaw("geom && ST_MakeEnvelope(?, ?, ?, ?, 4326)", [
+      $validated['west'],
+      $validated['south'],
+      $validated['east'],
+      $validated['north']
+    ]);
+
+    if ($gridSize > 0) {
+      $results = $query->select([
+        DB::raw("COUNT(*) as count"),
+        DB::raw("ST_AsGeoJSON(ST_Centroid(ST_Collect(geom))) as geojson"),
+        DB::raw("'cluster' as type")
+      ])
+        ->groupBy(DB::raw("ST_SnapToGrid(geom, $gridSize)"))
+        ->get();
+
+      $features = $results->map(function ($item) {
+        return [
+          'type' => 'Feature',
+          'geometry' => json_decode($item->geojson),
+          'properties' => [
+            'type' => 'cluster',
+            'count' => (int) $item->count,
+          ],
+        ];
+      });
+    } else {
+      $results = $query->select('*', DB::raw('ST_AsGeoJSON(geom) as geojson'))->get();
+
+      $features = $results->map(function ($asset) {
+        return [
+          'type' => 'Feature',
+          'geometry' => json_decode($asset->geojson),
+          'properties' => [
+            'type' => 'asset',
+            'id' => $asset->id,
+            'name' => $asset->name,
+          ],
+        ];
+      });
+    }
+    return response()->json([
+      'type' => 'FeatureCollection',
+      'features' => $features,
+    ]);
+  }
 }
