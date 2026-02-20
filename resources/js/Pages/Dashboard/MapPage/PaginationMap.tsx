@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
 
 const PaginationMap: React.FC = () => {
-  const [assets, setAssets] = useState<any[]>([])
+  const [assets, setAssets] = useState<any[]>([]);
   const [meta, setMeta] = useState<any>(null)
   const [page, setPage] = useState(1)
   const [viewport, setViewport] = useState<any>(null)
@@ -107,7 +107,7 @@ const PaginationMap: React.FC = () => {
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <MapWatcher />
 
-              {assets.map((asset: any) => (
+              {assets?.map((asset: any) => (
                 <GeoJSON
                   key={`${asset.id}-${page}`}
                   data={JSON.parse(asset.geojson)}
