@@ -27,4 +27,8 @@ class MapController extends Controller
     {
         return Inertia::render('Dashboard/MapPage/PaginationMap');
     }
+    public function cluster()
+    {
+        return Inertia::render('Dashboard/MapPage/MarkerClusterMap');
+    }
 }
