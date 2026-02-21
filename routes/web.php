@@ -49,6 +49,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/api/assets/nearest', [AssetController::class, 'getNearestAssets'])->name('assets.nearest');
     Route::get('/api/assets/pagination', [AssetController::class, 'getPaginationAssets'])->name('assets.pagination');
     Route::get('/api/assets/cluster', [AssetController::class, 'getClusteredAssets'])->name('assets.cluster');
+    Route::get('/api/route', [AssetController::class, 'getRoute'])->name('assets.route');
 
     Route::get('/map', [MapController::class, 'index'])->name('map.index');
     Route::get('/map-assets', [MapController::class, 'assets'])->name('map.assets');
@@ -56,6 +57,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::get('/map-nearest', [MapController::class, 'nearest'])->name('map.nearest');
     Route::get('/map-pagination', [MapController::class, 'pagination'])->name('map.pagination');
     Route::get('/map-markercluster', [MapController::class, 'cluster'])->name('map.cluster');
+    Route::get('/map-route', [MapController::class, 'routeMap'])->name('map.route');
 
     Route::get('/assets', [AssetController::class, 'index'])->name('assets.index');
     Route::post('/assets', [AssetController::class, 'store'])->name('assets.store');

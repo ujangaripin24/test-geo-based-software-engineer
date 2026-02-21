@@ -31,4 +31,8 @@ class MapController extends Controller
     {
         return Inertia::render('Dashboard/MapPage/MarkerClusterMap');
     }
+    public function routeMap()
+    {
+        return Inertia::render('Dashboard/MapPage/LeafletRouteMap');
+    }
 }
