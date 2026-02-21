@@ -1,13 +1,14 @@
 import Authenticated from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
 import axios from 'axios'
-import React, { useCallback, useState } from 'react'
-import L, { TileLayer } from 'leaflet';
-import { MapContainer, useMapEvents, GeoJSON } from 'react-leaflet';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import L from 'leaflet';
+import { MapContainer, TileLayer, useMapEvents, GeoJSON } from 'react-leaflet';
 
 const MarkerClusterMap: React.FC = () => {
   const [geojsonData, setGeojsonData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const mapRef = useRef<L.Map | null>(null);
 
   const fetchClusters = useCallback(async (map: L.Map) => {
     const bounds = map.getBounds();
@@ -36,8 +37,16 @@ const MarkerClusterMap: React.FC = () => {
     const map = useMapEvents({
       moveend: () => fetchClusters(map),
       zoomend: () => fetchClusters(map),
-    })
-    return null
+    });
+
+    useEffect(() => {
+      if (map) {
+        mapRef.current = map;
+        fetchClusters(map);
+      }
+    }, [map]);
+
+    return null;
   }
 
   const createClusterIcon = (count: number) => {
