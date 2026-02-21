@@ -8,6 +8,7 @@ use App\Services\AssetSpatialService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
 class AssetController extends Controller
@@ -469,5 +470,47 @@ class AssetController extends Controller
       'type' => 'FeatureCollection',
       'features' => $features,
     ]);
+  }
+
+  public function getRoute(Request $request)
+  {
+    $validated = $request->validate([
+      'fromAssetId' => 'required|exists:assets,id',
+      'toAssetId'   => 'required|exists:assets,id',
+    ]);
+
+    $coords = Asset::whereIn('id', [$validated['fromAssetId'], $validated['toAssetId']])
+      ->select('id', DB::raw('ST_X(geom) as lng'), DB::raw('ST_Y(geom) as lat'))
+      ->get()
+      ->keyBy('id');
+
+    $from = $coords->get($validated['fromAssetId']);
+    $to = $coords->get($validated['toAssetId']);
+
+    if (!$from || !$to) {
+      return response()->json(['error' => 'Aset tidak ditemukan'], 404);
+    }
+    $osrmUrl = "http://router.project-osrm.org/route/v1/driving/{$from->lng},{$from->lat};{$to->lng},{$to->lat}";
+
+    try {
+      $response = Http::get($osrmUrl, [
+        'overview'   => 'full',
+        'geometries' => 'geojson',
+      ]);
+
+      if ($response->failed()) {
+        throw new \Exception("OSRM API Error");
+      }
+
+      $data = $response->json();
+      $route = $data['routes'][0];
+      return response()->json([
+        'distance_meters'  => $route['distance'], // Jarak dalam meter
+        'duration_seconds' => $route['duration'], // Waktu tempuh dalam detik
+        'geometry'         => $route['geometry'], // GeoJSON LineString
+      ]);
+    } catch (\Exception $e) {
+      return response()->json(['error' => 'Gagal menghitung rute: ' . $e->getMessage()], 500);
+    }
   }
 }
